@@ -27,3 +27,7 @@ override.tf.json
 
 # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
 # example: *tfplan*
+
+
+# 개인 프로젝트에서의 lock 파일은 커밋하지 않음
+*.lock.*
