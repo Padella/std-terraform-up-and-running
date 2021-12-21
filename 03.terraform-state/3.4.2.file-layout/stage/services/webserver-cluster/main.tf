@@ -7,7 +7,13 @@ resource "aws_launch_configuration" "example" {
 	image_id 				= "ami-0c55b159cbfafe1f0"
 	instance_type 	= "t2.micro"
 	security_groups = [aws_security_group.instance.id]
-	user_data       = data.template_file.user_data.rendered 
+	
+  // user_data       = data.template_file.user_data.rendered 
+  user_data = <<-EOF
+							#!/bin/bash
+							echo "Hello, World" > index.html
+							nohup busybox httpd -f -p ${var.server_port} &
+							EOF
 
 	# ASG 의 시작 구성 참조로 인해 리소스를 삭제할 수 없는 문제 해결
 	# 수명 주기 설정으로 create 및 참조 업데이트 후 삭제
@@ -150,10 +156,10 @@ data "terraform_remote_state" "db" {
   }
 }
 
-# shell script 파일 분리
-data "template_file" "user_data" {
-  template = file("user-data.sh")
-}
+// # shell script 파일 분리
+// data "template_file" "user_data" {
+//   template = file("user-data.sh")
+// }
 
 # aws 기본 vpc 데이터 조회
 data "aws_vpc" "default" {
