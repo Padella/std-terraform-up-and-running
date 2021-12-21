@@ -1,3 +1,7 @@
+// *** terraform backend 는 variable 사용이 불가능하다. ***
+// TODO
+//  backend 관련 코드는 main 에서 분리해서 따로 관리하는 것이 좋은지 다른 좋은 예제를 찾아보는 것이 좋을 듯..?
+
 // terraform {
 //   backend "s3" {
 //     bucket = "example-tf-state"
