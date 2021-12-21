@@ -5,7 +5,7 @@
 variable "db_remote_state_bucket" {
   description = "The name of the S3 bucket used for the database's remote state storage"
   type        = string
-  default     = "padella-padella-tf-state-example"
+  default     = "padella-tf-state-example"
 }
 
 variable "db_remote_state_key" {
