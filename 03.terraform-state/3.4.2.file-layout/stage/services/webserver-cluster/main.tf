@@ -7,12 +7,7 @@ resource "aws_launch_configuration" "example" {
 	image_id 				= "ami-0c55b159cbfafe1f0"
 	instance_type 	= "t2.micro"
 	security_groups = [aws_security_group.instance.id]
-
-	user_data = <<-EOF
-							#!/bin/bash
-							echo "Hello, World" > index.html
-							nohup busybox httpd -f -p ${var.server_port} &
-							EOF
+	user_data       = data.template_file.user_data.rendered 
 
 	# ASG 의 시작 구성 참조로 인해 리소스를 삭제할 수 없는 문제 해결
 	# 수명 주기 설정으로 create 및 참조 업데이트 후 삭제
@@ -52,16 +47,6 @@ resource "aws_security_group" "instance" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-}
-
-# aws 기본 vpc 데이터 조회
-data "aws_vpc" "default" {
-  default = true
-}
-
-# default vpc id 를 통해 subnet 조회
-data "aws_subnet_ids" "default" {
-  vpc_id = data.aws_vpc.default.id
 }
 
 # ALB(ELB) 생성
@@ -153,4 +138,29 @@ resource "aws_security_group" "alb" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+data "terraform_remote_state" "db" {
+  backend = "s3"
+
+  config = {
+    bucket = var.db_remote_state_bucket
+    key    = var.db_remote_state_key
+    region = "us-east-2"
+  }
+}
+
+# shell script 파일 분리
+data "template_file" "user_data" {
+  template = file("user-data.sh")
+}
+
+# aws 기본 vpc 데이터 조회
+data "aws_vpc" "default" {
+  default = true
+}
+
+# default vpc id 를 통해 subnet 조회
+data "aws_subnet_ids" "default" {
+  vpc_id = data.aws_vpc.default.id
 }
