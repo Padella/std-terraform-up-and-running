@@ -15,6 +15,9 @@ terraform {
 
 resource "aws_db_instance" "example" {
   identifier_prefix = "terraform-up-and-running"
+  # destroy 할 경우 다음 option 을 활성화
+  # identify_prefix option 을 비활성화 한 뒤 apply > destroy 를 수행한다.
+  // skip_final_snapshot = true
   engine            = "mysql"
   allocated_storage = 10
   instance_class    = "db.t2.micro"
