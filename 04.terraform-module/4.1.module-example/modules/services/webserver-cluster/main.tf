@@ -1,7 +1,3 @@
-provider "aws" {
-	region = "us-east-2"
-}
-
 # ASG 를 설정하기 위한 "시작 구성(launch_configuration)" 생성
 resource "aws_launch_configuration" "example" {
 	image_id 				= "ami-0c55b159cbfafe1f0"
