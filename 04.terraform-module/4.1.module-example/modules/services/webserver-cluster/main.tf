@@ -66,7 +66,7 @@ resource "aws_lb" "example" {
 resource "aws_lb_listener" "http" {
 	# **ARN** 은 Amazon Resource Number 로 리소스의 일련번호
   load_balancer_arn = aws_lb.example.arn
-  port              = var.server_port
+  port              = local.http_port
   protocol          = "HTTP"
 
   # By default, return a simple 404 page
@@ -126,19 +126,19 @@ resource "aws_security_group" "alb" {
 
   # HTTP 인바운드 트래픽 허용
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = local.http_port
+    to_port     = local.http_port
+    protocol    = local.tcp_protocol
+    cidr_blocks = local.all_ips
   }
 
   # 모든 아웃바운트 트래픽 허용
 	# lb 가 health check 을 수행하도록 함 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = local.any_port
+    to_port     = local.any_port
+    protocol    = local.any_protocol
+    cidr_blocks = local.all_ips
   }
 }
 
@@ -152,6 +152,15 @@ data "terraform_remote_state" "db" {
     key    = "stage/data-stores/mysql/terraform.tfstate"
     region = "us-east-2"
   }
+}
+
+# local 값 지정
+locals {
+  http_port    = 80
+  any_port     = 0
+  any_protocol = "-1"
+  tcp_protocol = "tcp"
+  all_ips      = ["0.0.0.0/0"]
 }
 
 // # shell script 파일 분리
