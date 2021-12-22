@@ -4,4 +4,9 @@ provider "aws" {
 
 module "webserver_cluster" {
   source = "../../../modules/services/webserver-cluster"
+
+  cluster_name  = "webservers-prod"
+  instance_type = "t2.micro"
+  min_size      = 2
+  max_size      = 10
 }
