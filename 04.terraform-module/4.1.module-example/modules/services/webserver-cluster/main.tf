@@ -30,18 +30,18 @@ resource "aws_autoscaling_group" "example" {
 	# type EC2 는 vm 이 완전히 다운되었거나 하는 경우에 대해서만 비정상으로 판단
 	health_check_type = "ELB"
 
-	min_size = 2
-	max_size = 10
+	min_size = var.min_size
+	max_size = var.max_size
 
 	tag {
 		key 								= "Name"
-		value 							= "terraform-asg-example"
+		value 							= var.cluster_name
 		propagate_at_launch = true
 	}
 }
 
 resource "aws_security_group" "instance" {
-  name = var.instance_security_group_name
+  name = "${var.cluster_name}-instance"
 
   ingress {
     from_port   = var.server_port
@@ -54,7 +54,7 @@ resource "aws_security_group" "instance" {
 # ALB(ELB) 생성
 resource "aws_lb" "example" {
 
-  name               = var.alb_name
+  name               = var.cluster_name
 
   load_balancer_type = "application"
   subnets            = data.aws_subnet_ids.default.ids
@@ -66,7 +66,7 @@ resource "aws_lb" "example" {
 resource "aws_lb_listener" "http" {
 	# **ARN** 은 Amazon Resource Number 로 리소스의 일련번호
   load_balancer_arn = aws_lb.example.arn
-  port              = 80
+  port              = var.server_port
   protocol          = "HTTP"
 
   # By default, return a simple 404 page
@@ -84,7 +84,7 @@ resource "aws_lb_listener" "http" {
 # target group 을 정의해 ALB 가 인스턴스 상태를 점검할 수 있게 한다
 resource "aws_lb_target_group" "asg" {
 
-  name = var.alb_name
+  name = var.cluster_name
 
   port     = var.server_port
   protocol = "HTTP"
@@ -122,7 +122,7 @@ resource "aws_lb_listener_rule" "asg" {
 # ALB 를 위한 security group
 resource "aws_security_group" "alb" {
 
-  name = var.alb_security_group_name
+  name = "${var.cluster_name}-alb"
 
   # HTTP 인바운드 트래픽 허용
   ingress {
