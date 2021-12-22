@@ -11,7 +11,7 @@ module "webserver_cluster" {
   max_size      = 10
 }
 
-resource "aws_autoscaling_schdule" "scale_out_during_business_hours" {
+resource "aws_autoscaling_schedule" "scale_out_during_business_hours" {
   schedules_action_name = "scale-out-during-business-hours"
   min_size = 2
   max_size = 10
