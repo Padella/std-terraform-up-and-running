@@ -176,6 +176,45 @@ resource "aws_security_group" "alb" {
   }
 }
 
+resource "aws_cloudwatch_metric_alarm" "high_cpu_utilization" {
+  # 클러스터의 평균 CPU 사용률이 5분 동안 90% 이상인 경우 cloudwatch 경보 생성
+  alarm_name = "${var.cluster_name}-high-cpu-utilization"
+  namespace   = "AWS/EC2"
+  metric_name = "CPUUtilization"
+
+  dimensions = {
+    AuthScalingGroupName = aws_autoscaling_group.example.name
+  }
+
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods   = 1
+  period               = 300
+  statistic            = "Average"
+  threshold            = 90
+  unit                 = "Percent"
+}
+
+resource "aws_cloudwatch_metric_alarm" "low_cpu_credit_balance" {
+  # instance type 에 따른 조건분기
+  count = format("%.1s", var.instance_type) == "t" ? 1 : 0
+  
+  # CPU Credit 부족에 대한 경보 생성
+  alarm_name = "${var.cluster_name}-low-cpu-credit-balance"
+  namespace = "AWS/EC2"
+  metric_name = "CPUCreditBalance"
+
+  dimensions = {
+    AuthScalingGroupName = aws_autoscaling_group.example.name
+  }
+
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods   = 1
+  period               = 300
+  statistic            = "Minimum"
+  threshold            = 10
+  unit                 = "Count"
+}
+
 # 테스트 환경에서 local state 를 사용
 // data "terraform_remote_state" "db" {
 //   backend = "s3"
