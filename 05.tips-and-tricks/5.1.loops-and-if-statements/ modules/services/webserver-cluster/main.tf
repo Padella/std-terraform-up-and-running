@@ -152,17 +152,17 @@ resource "aws_security_group" "alb" {
   }
 }
 
-data "terraform_remote_state" "db" {
-  backend = "s3"
+// data "terraform_remote_state" "db" {
+//   backend = "s3"
 
-  config = {
-    # bucket = var.db_remote_state_bucket
-    # key    = var.db_remote_state_key
-    bucket = "padella-tf-state-example"
-    key    = "stage/data-stores/mysql/terraform.tfstate"
-    region = "us-east-2"
-  }
-}
+//   config = {
+//     # bucket = var.db_remote_state_bucket
+//     # key    = var.db_remote_state_key
+//     bucket = "padella-tf-state-example"
+//     key    = "stage/data-stores/mysql/terraform.tfstate"
+//     region = "us-east-2"
+//   }
+// }
 
 # local 값 지정
 locals {
