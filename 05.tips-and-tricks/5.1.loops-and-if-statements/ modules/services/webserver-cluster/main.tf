@@ -152,6 +152,7 @@ resource "aws_security_group" "alb" {
   }
 }
 
+# 테스트 환경에서 local state 를 사용
 // data "terraform_remote_state" "db" {
 //   backend = "s3"
 
