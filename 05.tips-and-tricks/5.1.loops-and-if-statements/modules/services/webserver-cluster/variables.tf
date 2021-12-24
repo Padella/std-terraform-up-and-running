@@ -34,6 +34,11 @@ variable "max_size" {
   type        = number
 }
 
+variable "enable_autoscaling" {
+  description = "If set to true, enable auth scaling"
+  type        = bool
+}
+
 # -----------------------------------------------------------------------
 # OPTIONAL PARAMETERS
 # -----------------------------------------------------------------------

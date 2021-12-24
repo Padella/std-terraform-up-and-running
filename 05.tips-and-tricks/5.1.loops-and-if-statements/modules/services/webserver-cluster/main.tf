@@ -50,6 +50,30 @@ resource "aws_autoscaling_group" "example" {
   }
 }
 
+resource "aws_autoscaling_schedule" "scale_out_during_business_hours" {
+  # terraform 에서는 resource 내 count 값이 0 인 경우 리소스를 생성하지 않음
+  # 1 인 경우 해당 리소스의 사본 하나를 얻음
+  count = var.enable_autoscaling ? 1 : 0
+
+  scheduled_action_name  = "${var.cluster_name}-scale-out-during-business-hours"
+  min_size               = 2
+  max_size               = 10
+  desired_capacity       = 10
+  recurrence             = "0 9 * * *"
+  autoscaling_group_name = aws_autoscaling_group.example.name
+}
+
+resource "aws_autoscaling_schedule" "scale_in_at_night" {
+  count = var.enable_autoscaling ? 1 : 0
+
+  scheduled_action_name  = "${var.cluster_name}-scale-in-at-night"
+  min_size               = 2
+  max_size               = 10
+  desired_capacity       = 2
+  recurrence             = "0 17 * * *"
+  autoscaling_group_name = aws_autoscaling_group.example.name
+}
+
 resource "aws_security_group" "instance" {
   name = "${var.cluster_name}-instance"
 
